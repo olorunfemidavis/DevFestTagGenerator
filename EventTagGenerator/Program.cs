@@ -27,9 +27,15 @@ namespace EventTagGenerator
         private static void ExportTags()
         {
             ALlList = new List<General>();
-
+            var csvFilePath = Path.Combine("Files","DevFestTagExport.csv");
+            var exportFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                "DevFestTags");
+            if (!File.Exists(csvFilePath))
+            {
+                
+            }
             #region Populate List
-            using(var reader = new StreamReader(@"Files/DevFestTagExport.csv"))
+            using(var reader = new StreamReader(csvFilePath))
             {
                 while (!reader.EndOfStream)
                 {
@@ -78,8 +84,8 @@ namespace EventTagGenerator
             #endregion
             #region Render
 
-            var exportFolder = Path.Combine(Environment.SpecialFolder.Desktop.ToString(),
-                "DevFestTags");
+            
+            
             if (!Directory.Exists(exportFolder))
                 Directory.CreateDirectory(exportFolder);
             var counter = 1;
