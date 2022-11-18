@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using EventTagGenerator.Helpers;
 using EventTagGenerator.Model;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.Fonts;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace EventTagGenerator
 {
@@ -77,50 +82,61 @@ namespace EventTagGenerator
                 "DevFestTags");
             if (!Directory.Exists(exportFolder))
                 Directory.CreateDirectory(exportFolder);
-            File.WriteAllText(Path.Combine(exportFolder, "test.txt"), "Hello World");
-            int counter = 0;
+            var counter = 1;
+            
+            PointF firstNameLocation = new PointF(45f, 220f);
+            PointF lastNameLocation = new PointF(45f, 250f);
+            PointF summaryLocation = new PointF(45f, 300f);
+            PointF tagNumberLocation = new PointF(280f, 400f);
+
+            FontCollection collection = new FontCollection();
+            FontFamily family = collection.Add(Path.Combine("Files","Fonts","Roboto-Medium.ttf"));
+            Font font = family.CreateFont(25, FontStyle.Regular);
+            Font summaryFont = family.CreateFont(12, FontStyle.Regular);
+
+            var nameColor = Color.Black;
+            var summaryColor = Color.FromRgb(101, 109, 116);
+            
             foreach (var item in ALlList)
             {
                 var tagNumber = counter.ToString("000");
                 var templateFile = item.TRoleType.GetTemplate();
-                var exportFileName = $"Tag{tagNumber}";
+                var exportFileName = Path.Combine(exportFolder,$"Tag{tagNumber}.png");
                 var footerColor = item.TRoleType.GetColor();
-                var nameColor = new SolidBrush(Color.Black);
-                var summaryColor = new SolidBrush(Color.FromArgb(101, 109, 116));
                 
                 //write on the photo now. 
-                PointF firstNameLocation = new PointF(10f, 10f);
-                PointF lastNameLocation = new PointF(10f, 50f);
-                PointF summaryLocation = new PointF(10f, 10f);
-                PointF roleLocation = new PointF(10f, 50f);
-                PointF tagNumberLocation = new PointF(10f, 10f);
-
-                Bitmap exportBitmap;
-                using (var bitmap = (Bitmap)Image.FromFile(templateFile))
+                
+                using (Image image = Image.Load(templateFile))
                 {
-                    using(Graphics graphics = Graphics.FromImage(bitmap))
+                    try
                     {
-                        using (Font arialFont =  new Font("Arial", 10))
-                        {
-                            graphics.DrawString(item.FirstName, arialFont, nameColor, firstNameLocation);
-                            graphics.DrawString(item.LastName, arialFont, nameColor, lastNameLocation);
-                            graphics.DrawString(item.Summary, arialFont, summaryColor, summaryLocation);
-                            graphics.DrawString(item.Footer, arialFont, footerColor, roleLocation);
-                            graphics.DrawString(tagNumber, arialFont, footerColor, tagNumberLocation);
-                          
-                        }
+                        if (!string.IsNullOrWhiteSpace(item.FirstName))
+                        image.Mutate(x => x.DrawText(item.FirstName, font, nameColor, firstNameLocation));
+                        
+                        if (!string.IsNullOrWhiteSpace(item.LastName))
+                        image.Mutate(x => x.DrawText(item.LastName, font, nameColor, lastNameLocation));
+
+                    
+                        if (!string.IsNullOrWhiteSpace(item.Summary))
+                            image.Mutate(x => x.DrawText(item.Summary, summaryFont, summaryColor, summaryLocation));
+
+                        if (item.TRoleType != RoleType.Organizer || item.TRoleType != RoleType.Volunteer)
+                            image.Mutate(x => x.DrawText(tagNumber, font, footerColor, tagNumberLocation));
+
+                        image.Save(exportFileName);
                     }
-
-                    exportBitmap = new Bitmap(bitmap);
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        throw;
+                    }
                 }
-                exportBitmap.Save(exportFileName);
-
                 counter++;
                 
-                return;
+                //return;
             }
 
-
+            Console.WriteLine($"Done with {counter} images. Check {exportFolder} for files");
             #endregion
         }
     }
