@@ -1,4 +1,6 @@
-﻿namespace EventTagGenerator.Helpers;
+﻿using System.Diagnostics;
+
+namespace EventTagGenerator.Helpers;
 
 public class Exportee
 {
@@ -110,10 +112,30 @@ public class Exportee
             }
 
             counter++;
+            Console.WriteLine($"Done with {counter} images.");
         }
 
         Console.WriteLine($"Done with {counter} images. Check {exportFolder} for files");
-
+        OpenPathInExplorer(exportFolder);
         #endregion
+    }
+    
+    public static void OpenPathInExplorer(string path)
+    {
+        Process process = new Process();
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+
+        startInfo.FileName = "explorer"; // On Windows
+        startInfo.Arguments = path;
+
+        if (OperatingSystem.IsMacOS())
+        {
+            // Use the "open" command on macOS
+            startInfo.FileName = "open";
+            startInfo.Arguments = $"\"{path}\"";
+        }
+
+        process.StartInfo = startInfo;
+        process.Start();
     }
 }
