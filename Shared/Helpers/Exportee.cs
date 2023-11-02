@@ -21,18 +21,13 @@ public class Exportee
                 var line = reader.ReadLine();
                 var values = line.Split(',');
 
-                General general = new General();
-                general.FirstName = values[0].ToTitle();
-                general.LastName = values[1].ToTitle();
-
-                general.Summary = $"{values[3]}, {values[2]}";
-                if (string.IsNullOrEmpty(values[3]))
-                    general.Summary = values[2];
-                if (string.IsNullOrEmpty(values[2]))
-                    general.Summary = values[3];
-
-                general.Footer = values[4];
-                general.Index = int.Parse(values[5]);
+                var general = new General
+                {
+                    FirstName = values[0].ToLower().ToTitle(),
+                    LastName = values[1].ToLower().ToTitle(),
+                    Footer = values[4],
+                    Index = int.Parse(values[5])
+                };
                 general.TRoleType = general.Footer switch
                 {
                     "Attendee" => RoleType.Attendee,
@@ -42,6 +37,13 @@ public class Exportee
                     "Partner" => RoleType.Partner,
                     _ => general.TRoleType
                 };
+                general.Summary = $"{values[3]}, {values[2]}";
+                if (string.IsNullOrEmpty(values[3]))
+                    general.Summary = values[2];
+                if (string.IsNullOrEmpty(values[2]))
+                    general.Summary = values[3];
+
+             
                 ALlList.Add(general);
             }
         }
