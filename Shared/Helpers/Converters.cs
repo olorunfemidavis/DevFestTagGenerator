@@ -1,8 +1,3 @@
-using System;
-using System.Globalization;
-using System.IO;
-using EventTagGenerator.Model;
-using SixLabors.ImageSharp;
 
 namespace EventTagGenerator.Helpers
 {
@@ -26,10 +21,13 @@ namespace EventTagGenerator.Helpers
                 case RoleType.Attendee:
                     return Color.FromRgb(85, 122, 185);
                     break;
-                case RoleType.Organizer:
+                case RoleType.Partner:
                     return Color.FromRgb(242, 189, 68);
                     break;
                 case RoleType.Speaker:
+                    return Color.FromRgb(220, 69, 59);
+                    break;
+                case RoleType.Organizer:
                     return Color.FromRgb(220, 69, 59);
                     break;
                 case RoleType.Volunteer:

@@ -6,6 +6,8 @@ namespace EventTagGenerator.Model
         public string LastName { get; set; }
         public string Summary { get; set; }
         public string Footer { get; set; }
+        public int Index { get; set; }
+
         public RoleType TRoleType { get; set; }
     }
 
@@ -14,6 +16,7 @@ namespace EventTagGenerator.Model
         Attendee,
         Organizer,
         Speaker,
-        Volunteer
+        Volunteer,
+        Partner
     }
 }
